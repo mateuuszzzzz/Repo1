@@ -1,0 +1,3 @@
+[submodule "Repo2"]
+	path = Repo2
+	url = git@github.com:mateuuszzzzz/Repo2.git

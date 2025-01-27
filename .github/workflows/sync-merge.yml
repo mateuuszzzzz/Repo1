@@ -26,6 +26,10 @@ jobs:
           PR_NUMBER="${BASH_REMATCH[1]}"
           echo "Found PR number: $PR_NUMBER"
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+        elif [[ $PR_DESCRIPTION =~ related[[:space:]]repo2[[:space:]]pr:[[:space:]]([0-9]+) ]]; then
+          PR_NUMBER="${BASH_REMATCH[1]}"
+          echo "Found PR number: $PR_NUMBER"
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
         else
           echo "Error: Could not find related PR URL in the description"
           exit 1

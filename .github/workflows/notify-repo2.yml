@@ -1,0 +1,44 @@
+name: Notify Repo2 about PR changes
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, closed]
+    branches: 
+      - main
+
+jobs:
+  notify-repo-b:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract PR Information
+        id: pr_info
+        run: |
+          # Escape description for JSON
+          DESCRIPTION=$(jq -r --raw-input --raw-output '@json' <<< "${{ github.event.pull_request.body }}")
+          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "pr_state=${{ github.event.pull_request.state }}" >> $GITHUB_OUTPUT
+          echo "action=${{ github.event.action }}" >> $GITHUB_OUTPUT
+          echo "base_branch=${{ github.event.pull_request.base.ref }}" >> $GITHUB_OUTPUT
+          echo "repo_full_name=${{ github.repository }}" >> $GITHUB_OUTPUT
+          
+      - name: Notify Repository B
+        if: github.event.pull_request.base.ref == 'main'
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/mateuuszzzzz/repo2/dispatches \
+            -d '{
+              "event_type": "notify-about-pr-changes",
+              "client_payload": {
+                "action": "${{ steps.pr_info.outputs.action }}",
+                "pr_number": "${{ steps.pr_info.outputs.pr_number }}",
+                "pr_state": "${{ steps.pr_info.outputs.pr_state }}",
+                "description": ${{ steps.pr_info.outputs.description }},
+                "base_branch": "${{ steps.pr_info.outputs.base_branch }}",
+                "repo_full_name": "${{ steps.pr_info.outputs.repo_full_name }}",
+                "sender": "mateuuszzzzz",
+                "timestamp": "2025-01-23 15:27:22"
+              }
+            }'

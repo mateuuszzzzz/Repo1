@@ -20,10 +20,9 @@ jobs:
       id: extract-pr
       run: |
         # Get PR description
-        PR_DESCRIPTION="${{ github.event.pull_request.body }}"
-        
+        PR_DESCRIPTION=$(echo "${{ github.event.pull_request.body }}" | tr '[:upper:]' '[:lower:]')
         # Extract URL using grep and regex
-        if [[ $PR_DESCRIPTION =~ Related[[:space:]]Repo2[[:space:]]PR:[[:space:]]https://github.com/mateuuszzzzz/Repo2/pull/([0-9]+) ]]; then
+        if [[ $PR_DESCRIPTION =~ related[[:space:]]repo2[[:space:]]pr:[[:space:]]https://github.com/mateuuszzzzz/Repo2/pull/([0-9]+) ]]; then
           PR_NUMBER="${BASH_REMATCH[1]}"
           echo "Found PR number: $PR_NUMBER"
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT

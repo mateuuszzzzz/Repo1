@@ -63,5 +63,6 @@ jobs:
         cd ..
         git add Repo2
         git commit -m "Update Repo2 commit after merge of ${{ github.event.pull_request.number }}"
+        git push origin main
         
         

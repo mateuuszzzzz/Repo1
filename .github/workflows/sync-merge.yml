@@ -13,7 +13,7 @@ jobs:
     
     steps:
       - name: Extract PR number from description
-        id: extract-pr
+        id: extract_pr
         run: |
           # Get PR description
           PR_DESCRIPTION=$(echo "${{ github.event.pull_request.body }}" | tr '[:upper:]' '[:lower:]')

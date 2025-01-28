@@ -54,6 +54,8 @@ jobs:
       
     - name: Bump submodule commit
       run: |
+        git config --global user.name mateuuszzzzz
+        git config --global user.email mateusz.rajski@swmansion.com
         git submodule update --init
         cd Repo2
         git checkout main

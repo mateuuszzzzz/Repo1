@@ -1,0 +1,33 @@
+name: Check if we should add/remove association with PR from Repo2
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - closed
+
+jobs:
+  associate-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Repo1 PR number and title
+
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+          PR_TITLE=${{ github.event.pull_request.title }}
+          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
+
+      - name: Check for reference to another PR from Repo2
+        run: |
+          # Check if the title contains the pattern for another repo's PR
+          if [[ "$PR_TITLE" =~ \[Repo\ B\ ([0-9]+)\] ]]; then
+            SUBMODULE_PR_NUMBER="${BASH_REMATCH[1]}"
+            echo "SUBMODULE_PR_NUMBER=$SUBMODULE_PR_NUMBER" >> $GITHUB_ENV
+            echo "Referenced PR #$SUBMODULE_PR_NUMBER found" 
+          else
+            echo "No referenced PR found in title"
+            exit 0
+          fi

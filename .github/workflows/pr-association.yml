@@ -16,7 +16,7 @@ jobs:
 
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENVi
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
           PR_TITLE=${{ github.event.pull_request.title }}
           echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
 

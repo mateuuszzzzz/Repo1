@@ -75,9 +75,8 @@ jobs:
         run: |
           SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER }}"
           PREVIOUS_SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.PREVIOUS_SUBMODULE_PR_NUMBER }}"
-          PR_STATE="${{ github.event.pull_request.state }}"
 
-          if [[ "${{ github.event.action }}" == "edited" && -n "$PREVIOUS_SUBMODULE_PR_NUMBER" && "$PREVIOUS_SUBMODULE_PR_NUMBER" != "$SUBMODULE_PR_NUMBER" && "$PR_STATE" == "open"]]; then
+          if [[ "${{ github.event.action }}" == "edited" && -n "$PREVIOUS_SUBMODULE_PR_NUMBER" && "$PREVIOUS_SUBMODULE_PR_NUMBER" != "$SUBMODULE_PR_NUMBER" ]]; then
             echo "Here we should unlink PR #$PREVIOUS_SUBMODULE_PR_NUMBER"
             exit 0
           fi

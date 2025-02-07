@@ -112,6 +112,11 @@ jobs:
             echo "There is no PR to be unlinked"
             exit 0
           fi
+          
+          CURRENT_SUBMODULE_PR_TITLE=$(gh pr view "$LINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title")
+          echo "Current submodule PR title is $CURRENT_SUBMODULE_PR_TITLE"
+        env:
+          GH_TOKEN: ${{ secrets.MODERATE_PR_TOKEN }}
 
       - name: Unlink PR
         run: |

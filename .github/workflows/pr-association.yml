@@ -21,16 +21,63 @@ jobs:
           PR_TITLE="${{ github.event.pull_request.title }}"
           echo "PR_TITLE=$PR_TITLE" >> $GITHUB_OUTPUT
 
-      - name: Check for reference to another PR from Repo2
+      - name: Get Repo1 PR previous title
+        id: get_previous_title
+        if: github.event.action == 'edited' 
+        run: |
+          PREVIOUS_PR_TITLE="${{ github.event.changes.title.from }}"
+          if [ -z "$PREVIOUS_PR_TITLE" ]; then
+            echo "No previous title available (title was not changed)."
+          else
+            echo "PREVIOUS_PR_TITLE=$PREVIOUS_PR_TITLE" >> $GITHUB_OUTPUT
+            echo "Previous PR title: $PREVIOUS_PR_TITLE"
+          fi
+
+      - name: Check for references to other PRs from Repo2
+        id: get_submodule_number
         run: |
           PR_NUMBER="${{ steps.get_number_and_title.outputs.PR_NUMBER }}"
           PR_TITLE="${{ steps.get_number_and_title.outputs.PR_TITLE }}"
-          # Check if the title contains the pattern for another repo's PR
-          if [[ "$PR_TITLE" =~ \[Repo\ B\ ([0-9]+)\] ]]; then
-            SUBMODULE_PR_NUMBER="${BASH_REMATCH[1]}"
+          PREVIOUS_PR_TITLE="${{ steps.get_previous_title.outputs.PREVIOUS_PR_TITLE }}"
+
+          extract_submodule_pr_number() {
+            local title="$1"
+            if [[ "$title" =~ \[Repo2\ ([0-9]+)\] ]]; then
+              local submodule_pr_number="${BASH_REMATCH[1]}"
+              echo "$submodule_pr_number"
+            fi
+          }
+
+          SUBMODULE_PR_NUMBER=$(extract_submodule_pr_number "$PR_TITLE")
+
+          if [ -n "$SUBMODULE_PR_NUMBER" ]; then
             echo "SUBMODULE_PR_NUMBER=$SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
-            echo "Referenced PR #$SUBMODULE_PR_NUMBER found" 
+            echo "Referenced PR #$SUBMODULE_PR_NUMBER found"
           else
-            echo "No referenced PR found in title"
+            echo "No referenced PR found"
+          fi
+
+
+          if [ -z "$PREVIOUS_PR_TITLE" ]; then
             exit 0
           fi
+
+          PREVIOUS_SUBMODULE_PR_NUMBER=$(extract_submodule_pr_number "$PREVIOUS_PR_TITLE")
+
+          if [ -n "$PREVIOUS_SUBMODULE_PR_NUMBER" ]; then
+            echo "PREVIOUS_SUBMODULE_PR_NUMBER=$PREVIOUS_SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "Referenced previous PR #$PREVIOUS_SUBMODULE_PR_NUMBER found"
+          else
+            echo "No referenced previous PR found"
+          fi
+
+
+      # - name: Check Repo2 PR title and state # This step also determines if submodule PR even exists. i.e. Any failure will be perceived as non-existent
+      #   id: get_submodule_title
+      #   if: steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER != ''
+      #   run: |
+      #     SUBMODULE_PR_NUMBER="${{steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER}}"
+      #     SUBMODULE_PR_TITLE=$(gh pr view $SUBMODULE_PR_NUMBER --repo "$REPO2_OWNER/$REPO2_NAME" --json title -q ".title")
+      #     echo "SUBMODULE_PR_TITLE=$SUBMODULE_PR_TITLE" >> $GITHUB_OUTPUT
+      #   env:
+      #     GH_TOKEN: ${{ secrets.MODERATE_PR_TOKEN }}

@@ -113,7 +113,7 @@ jobs:
             exit 0
           fi
           
-          CURRENT_SUBMODULE_PR_TITLE=$(gh pr view "$LINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title")
+          CURRENT_SUBMODULE_PR_TITLE=$(gh pr view "$UNLINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title")
           echo "Current submodule PR title is $CURRENT_SUBMODULE_PR_TITLE"
         env:
           GH_TOKEN: ${{ secrets.MODERATE_PR_TOKEN }}

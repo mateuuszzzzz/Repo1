@@ -77,14 +77,27 @@ jobs:
           PREVIOUS_SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.PREVIOUS_SUBMODULE_PR_NUMBER }}"
 
           if [[ "${{ github.event.action }}" == "edited" && -n "$PREVIOUS_SUBMODULE_PR_NUMBER" && "$PREVIOUS_SUBMODULE_PR_NUMBER" != "$SUBMODULE_PR_NUMBER" ]]; then
-            echo "Here we should unlink PR #$PREVIOUS_SUBMODULE_PR_NUMBER"
+            echo "Here we should unlink previous PR #$PREVIOUS_SUBMODULE_PR_NUMBER"
             exit 0
           fi
 
           if [[ "${{ github.event.action }}" == "closed" && -n "$SUBMODULE_PR_NUMBER" ]]; then
-            echo "Here we should unlink PR #$SUBMODULE_PR_NUMBER"
+            echo "Here we should unlink current PR #$SUBMODULE_PR_NUMBER"
             exit 0
           fi
       - name: Link PRs if necessary
+        if: github.event.action == 'edited' || github.event.action == 'opened' || github.event.action == 'reopened'
         run: |
-          echo "TEST LINK"
+         SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER }}"
+         PREVIOUS_SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.PREVIOUS_SUBMODULE_PR_NUMBER }}"
+         
+         if [[ "${{ github.event.action }}" == "edited" && -n "$SUBMODULE_PR_NUMBER" && "$PREVIOUS_SUBMODULE_PR_NUMBER" != "$SUBMODULE_PR_NUMBER" ]]; then
+            echo "Here we should link current PR #$SUBMODULE_PR_NUMBER"
+            exit 0
+         fi
+
+         if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "reopened" ]] && [ -n "$SUBMODULE_PR_NUMBER" ]; then
+            echo "Here we should link current PR #$SUBMODULE_PR_NUMBER"
+            exit 0
+         fi
+

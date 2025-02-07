@@ -33,7 +33,7 @@ jobs:
             echo "Previous PR title: $PREVIOUS_PR_TITLE"
           fi
 
-      - name: Check for references to other PRs from Repo2
+      - name: Check for references to other PRs from Repo2 # This considers also previous reference if it was included in previous title
         id: get_submodule_number
         run: |
           PR_NUMBER="${{ steps.get_number_and_title.outputs.PR_NUMBER }}"
@@ -70,14 +70,21 @@ jobs:
           else
             echo "No referenced previous PR found"
           fi
+      - name: Unlink PRs if necessary
+        if: github.event.action == 'edited' || github.event.action == 'closed' 
+        run: |
+          SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER }}"
+          PREVIOUS_SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.PREVIOUS_SUBMODULE_PR_NUMBER }}"
 
+          if [[ "${{ github.event.action }}" == "edited" && -n "$PREVIOUS_SUBMODULE_PR_NUMBER" && "$PREVIOUS_SUBMODULE_PR_NUMBER" != "$SUBMODULE_PR_NUMBER" ]]; then
+            echo "Here we should unlink PR #$PREVIOUS_SUBMODULE_PR_NUMBER"
+            exit 0
+          fi
 
-      # - name: Check Repo2 PR title and state # This step also determines if submodule PR even exists. i.e. Any failure will be perceived as non-existent
-      #   id: get_submodule_title
-      #   if: steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER != ''
-      #   run: |
-      #     SUBMODULE_PR_NUMBER="${{steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER}}"
-      #     SUBMODULE_PR_TITLE=$(gh pr view $SUBMODULE_PR_NUMBER --repo "$REPO2_OWNER/$REPO2_NAME" --json title -q ".title")
-      #     echo "SUBMODULE_PR_TITLE=$SUBMODULE_PR_TITLE" >> $GITHUB_OUTPUT
-      #   env:
-      #     GH_TOKEN: ${{ secrets.MODERATE_PR_TOKEN }}
+          if [[ "${{ github.event.action }}" == "closed" && -n "$SUBMODULE_PR_NUMBER" ]]; then
+            echo "Here we should unlink PR #$SUBMODULE_PR_NUMBER"
+            exit 0
+          fi
+      - name: Link PRs if necessary
+        run: |
+          echo "TEST LINK"

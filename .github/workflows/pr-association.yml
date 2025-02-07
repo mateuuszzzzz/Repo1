@@ -115,7 +115,7 @@ jobs:
 
       - name: Unlink PR
         run: |
-          LINK_PR="${{ steps.unlink.outputs.LINK_PR }}"
+          LINK_PR="${{ steps.link.outputs.LINK_PR }}"
 
           if [[ -z "$LINK_PR" ]]; then
             echo "There is no PR to be linked"

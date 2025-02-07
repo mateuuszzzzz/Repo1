@@ -97,14 +97,12 @@ jobs:
          PREVIOUS_SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.PREVIOUS_SUBMODULE_PR_NUMBER }}"
          
          if [[ "${{ github.event.action }}" == "edited" && -n "$SUBMODULE_PR_NUMBER" && "$PREVIOUS_SUBMODULE_PR_NUMBER" != "$SUBMODULE_PR_NUMBER" ]]; then
-            echo "Here we should link current PR #$SUBMODULE_PR_NUMBER"
-            "LINK_PR=$SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "LINK_PR=$SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
             exit 0
          fi
 
          if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "reopened" ]] && [ -n "$SUBMODULE_PR_NUMBER" ]; then
-            echo "Here we should link current PR #$SUBMODULE_PR_NUMBER"
-            "LINK_PR=$SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "LINK_PR=$SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
             exit 0
          fi
 

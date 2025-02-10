@@ -115,7 +115,7 @@ jobs:
           
           CURRENT_SUBMODULE_PR_TITLE=$(gh pr view "$UNLINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title")
           UPDATED_SUBMODULE_PR_TITLE=$(echo "$CURRENT_SUBMODULE_PR_TITLE" | sed -E 's/\[Repo1 [0-9]+\] //')
-          gh pr edit "$UNLINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title"
+          gh pr edit "$UNLINK_PR" --repo "mateuuszzzzz/Repo2" --title "$UPDATED_SUBMODULE_PR_TITLE"
         env:
           GH_TOKEN: ${{ secrets.MODERATE_PR_TOKEN }}
 
@@ -131,6 +131,6 @@ jobs:
 
           CURRENT_SUBMODULE_PR_TITLE=$(gh pr view "$LINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title")
           UPDATED_SUBMODULE_PR_TITLE="[Repo1 $PR_NUMBER]$CURRENT_SUBMODULE_PR_TITLE"
-          gh pr edit "$LINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title"
+          gh pr edit "$LINK_PR" --repo "mateuuszzzzz/Repo2" " --title "$UPDATED_SUBMODULE_PR_TITLE"
         env:
           GH_TOKEN: ${{ secrets.MODERATE_PR_TOKEN }}

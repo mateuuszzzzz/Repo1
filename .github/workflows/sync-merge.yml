@@ -16,10 +16,10 @@ jobs:
         id: extract_pr
         run: |
           # Get PR description
-          PR_DESCRIPTION=$(echo "${{ github.event.pull_request.body }}" | tr '[:upper:]' '[:lower:]')
+          PR_TITLE=$(echo "${{ github.event.pull_request.title }}"
           # Extract URL using grep and regex
-          if [[ $PR_DESCRIPTION =~ related[[:space:]]repo2[[:space:]]pr:[[:space:]](https://github.com/mateuuszzzzz/repo2/pull/)?([0-9]+) ]]; then
-            PR_NUMBER="${BASH_REMATCH[2]}"
+          if [[ $PR_TITLE =~ \[Repo2[[:space:]]([0-9]+)\] ]]; then
+            PR_NUMBER="${BASH_REMATCH[1]}"
             echo "Found PR number: $PR_NUMBER"
             echo "submodule_pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           else
@@ -78,7 +78,7 @@ jobs:
           submodules: true
           token: ${{ secrets.COMMIT_PAT_TOKEN }}
         
-      - name: Bump submodule commit
+      - name: Bump submodule commit and merge this change
         run: |
           git config --global user.name mateuuszzzzz
           git config --global user.email mateusz.rajski@swmansion.com
@@ -90,7 +90,6 @@ jobs:
           git add Repo2
           git commit -m "Update Repo2 commit after merge of ${{ github.event.pull_request.number }}"
           git push origin main
-          exit 1
       - name: Announce that automatic submodule commit bump has failed
         if: ${{ failure() }}
         run: |

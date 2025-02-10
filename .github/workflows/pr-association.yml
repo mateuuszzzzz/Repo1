@@ -140,7 +140,13 @@ jobs:
           fi
 
           CURRENT_SUBMODULE_PR_TITLE=$(gh pr view "$LINK_PR" --repo "mateuuszzzzz/Repo2" --json title -q ".title")
-          UPDATED_SUBMODULE_PR_TITLE="[Repo1 $PR_NUMBER]$CURRENT_SUBMODULE_PR_TITLE"
+
+          if [[ "$CURRENT_SUBMODULE_PR_TITLE" =~ ^\[ ]]; then
+            UPDATED_SUBMODULE_PR_TITLE="[Repo1 $PR_NUMBER]$CURRENT_SUBMODULE_PR_TITLE"
+          else
+            UPDATED_SUBMODULE_PR_TITLE="[Repo1 $PR_NUMBER] $CURRENT_SUBMODULE_PR_TITLE"
+          fi
+
           curl -L --fail \
             -X PATCH \
             -H "Accept: application/vnd.github+json" \

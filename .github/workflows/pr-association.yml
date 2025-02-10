@@ -76,13 +76,14 @@ jobs:
         run: |
           SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.SUBMODULE_PR_NUMBER }}"
           PREVIOUS_SUBMODULE_PR_NUMBER="${{ steps.get_submodule_number.outputs.PREVIOUS_SUBMODULE_PR_NUMBER }}"
+          GITHUB_PR_MERGED="${{ github.event.pull_request.merged }}"
 
           if [[ "${{ github.event.action }}" == "edited" && -n "$PREVIOUS_SUBMODULE_PR_NUMBER" && "$PREVIOUS_SUBMODULE_PR_NUMBER" != "$SUBMODULE_PR_NUMBER" ]]; then
             echo "UNLINK_PR=$PREVIOUS_SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          if [[ "${{ github.event.action }}" == "closed" && -n "$SUBMODULE_PR_NUMBER" && github.event.pull_request.merged != true]]; then
+          if [[ "${{ github.event.action }}" == "closed" && -n "$SUBMODULE_PR_NUMBER" && "$GITHUB_PR_MERGED" != "true" ]]; then
             echo "UNLINK_PR=$SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
             exit 0
           fi

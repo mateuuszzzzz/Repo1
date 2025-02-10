@@ -15,8 +15,8 @@ jobs:
       - name: Extract PR number from description
         id: extract_pr
         run: |
-          # Get PR description
-          PR_TITLE=$(echo "${{ github.event.pull_request.title }}"
+          # Get PR title
+          PR_TITLE="${{ github.event.pull_request.title }}"
           # Extract URL using grep and regex
           if [[ $PR_TITLE =~ \[Repo2[[:space:]]([0-9]+)\] ]]; then
             PR_NUMBER="${BASH_REMATCH[1]}"

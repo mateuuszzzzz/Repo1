@@ -82,7 +82,7 @@ jobs:
             exit 0
           fi
 
-          if [[ "${{ github.event.action }}" == "closed" && -n "$SUBMODULE_PR_NUMBER" ]]; then
+          if [[ "${{ github.event.action }}" == "closed" && -n "$SUBMODULE_PR_NUMBER" && github.event.pull_request.merged != true]]; then
             echo "UNLINK_PR=$SUBMODULE_PR_NUMBER" >> $GITHUB_OUTPUT
             exit 0
           fi
